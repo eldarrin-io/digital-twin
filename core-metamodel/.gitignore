@@ -1,6 +1,6 @@
 # DBOS-specific
 .dbos
-
+*.bat
 
 # Logs
 **/.DS_Store
