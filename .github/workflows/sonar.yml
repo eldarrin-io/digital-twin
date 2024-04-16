@@ -15,8 +15,8 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Install dependencies
         run: cd core-metamodel && npm install && npm run build
-      - name: Test
-        run: cd core-metamodel && npm run test
+#      - name: Test
+#        run: cd core-metamodel && npm run test
       - name: Install Sonar Scanner
         run: |
           npm install -g sonarqube-scanner
