@@ -1,0 +1,12 @@
+database:
+  hostname: localhost
+  port: 5432
+  username: postgres
+  password: ${PGPASSWORD}
+  app_db_name: core_metamodel_ecosystem
+  connectionTimeoutMillis: 3000
+  app_db_client: knex
+  migrate:
+    - npx knex migrate:latest
+  rollback:
+    - npx knex migrate:rollback

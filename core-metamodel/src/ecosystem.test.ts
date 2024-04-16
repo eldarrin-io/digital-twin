@@ -8,6 +8,8 @@ describe("ecosystem-operations-test", () => {
 
   beforeAll(async () => {
     testRuntime = await createTestingRuntime([EcosystemOperations]);
+    await testRuntime.queryUserDB("DELETE FROM business_capability");
+    await testRuntime.queryUserDB("DELETE FROM ecosystem");
   });
 
   afterAll(async () => {
