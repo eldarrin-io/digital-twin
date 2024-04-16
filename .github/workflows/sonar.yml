@@ -19,8 +19,7 @@ jobs:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Setup Postgres
         run: |
-          cd core-metamodel
-          node start_postgres_docker.js
+          cd core-metamodel && PGPASSWORD=D3lri0us && node start_postgres_docker.js
           npx dbos migrate
       - name: Install dependencies
         run: |
