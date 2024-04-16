@@ -20,6 +20,8 @@ jobs:
       - name: Setup Postgres
         run: |
           cd core-metamodel && PGPASSWORD=D3lri0us && node start_postgres_docker.js
+          npm install -g db-migrate
+          npm install
           npx dbos migrate
       - name: Install dependencies
         run: |
