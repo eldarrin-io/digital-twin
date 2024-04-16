@@ -17,33 +17,33 @@ export class BusinessCapabilityOperations {
   @Transaction()
   static async insertBusinessCapability(ctx: TransactionContext<Knex>,
                                         name: string, ecosystem_id: number) {
-    const buscap: BusinessCapability = { name, ecosystem_id };
+    const busCap: BusinessCapability = { name, ecosystem_id };
     const exists = await ctx.client<BusinessCapability>('business_capability')
         .select().where({ name }).andWhere({ ecosystem_id }).first();
     if (exists) {
       ctx.logger.warn(`BusinessCapability already exists: ${name}`);
-      buscap.last_status = "BusinessCapability already exists";
+      busCap.last_status = "BusinessCapability already exists";
     } else {
       const rows = await ctx.client<BusinessCapability>("business_capability")
-          .insert({name: buscap.name, ecosystem_id: buscap.ecosystem_id})
+          .insert({name: busCap.name, ecosystem_id: busCap.ecosystem_id})
           .returning("id");
-      buscap.id = rows[0].id;
-      buscap.last_status = "BusinessCapability inserted";
+      busCap.id = rows[0].id;
+      busCap.last_status = "BusinessCapability inserted";
     }
-    return buscap;
+    return busCap;
   }
 
   @Transaction()
-  static async updateBusinessCapability(ctx: TransactionContext<Knex>, buscap: BusinessCapability) {
+  static async updateBusinessCapability(ctx: TransactionContext<Knex>, busCap: BusinessCapability) {
     await ctx.client<BusinessCapability>("business_capability")
-        .update({ name: buscap.name })
-        .where({ id: buscap.id });
-    return buscap;
+        .update({ name: busCap.name })
+        .where({ id: busCap.id });
+    return busCap;
   }
 
   @Transaction({ readOnly: true })
   static async getBusinessCapabilityTrans(ctx: TransactionContext<Knex>, name: string, ecosystem_id: number): Promise<BusinessCapability | undefined> {
-    ctx.logger.info(`getting session rbuscaprd ${name}`);
+    ctx.logger.info(`getting session rbusCaprd ${name}`);
     const session = await ctx.client<BusinessCapability>('business_capability')
         .select("*")
         .where({ name, ecosystem_id });
@@ -60,11 +60,10 @@ export class BusinessCapabilityOperations {
 
     // if id exists, update
     if (id) {
-      const buscap: BusinessCapability = { id, name, ecosystem_id };
-      return ctx.invoke(BusinessCapabilityOperations).updateBusinessCapability(buscap);
+      const busCap: BusinessCapability = { id, name, ecosystem_id };
+      return ctx.invoke(BusinessCapabilityOperations).updateBusinessCapability(busCap);
     } else {
       // Insert a new row into the 'BusinessCapability' table.
-      const buscap: BusinessCapability = { name, ecosystem_id };
       return ctx.invoke(BusinessCapabilityOperations).insertBusinessCapability(name, ecosystem_id);
     }
   }

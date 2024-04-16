@@ -1,5 +1,5 @@
 import { TestingRuntime, createTestingRuntime } from "@dbos-inc/dbos-sdk";
-import { EcosystemOperations, ecosystem } from "./operations";
+import { EcosystemOperations, ecosystem } from "./ecosystem";
 // @ts-ignore
 import request from "supertest";
 
