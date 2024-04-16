@@ -9,17 +9,13 @@ jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
-    container:
-      image: postgres:latest
-      env:
-        PGPASSWORD: D3lri0us
-        POSTGRES_PASSWORD: D3lri0us
-      ports:
-        - 5432
+
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: Setup Postgres
+        run: cd core-metamodel && PGPASSWORD=D3lri0us node start_postgres_docker.js
       - name: Install dependencies
         run: cd core-metamodel && npm install && npm run build
       - name: Test
