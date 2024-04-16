@@ -9,17 +9,28 @@ jobs:
   sonarcloud:
     name: SonarCloud
     runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      PGPASSWORD: D3lri0us
 
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Setup Postgres
-        run: cd core-metamodel && PGPASSWORD=D3lri0us node start_postgres_docker.js
+        run: |
+          cd core-metamodel
+          node start_postgres_docker.js
+          npx dbos migrate
       - name: Install dependencies
-        run: cd core-metamodel && npm install && npm run build
+        run: |
+          cd core-metamodel
+          npm install
+          npm run build
       - name: Test
-        run: cd core-metamodel && PGPASSWORD=D3lri0us npm run test
+        run: |
+          cd core-metamodel
+          npm run test
 #      - name: Install Sonar Scanner
 #        run: |
 #          npm install -g sonarqube-scanner
