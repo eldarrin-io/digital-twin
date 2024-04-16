@@ -22,9 +22,20 @@ describe("ecosystem-operations-test", () => {
     const res = await testRuntime.invoke(EcosystemOperations).insertEcosystem(eco);
     expect(res.id).toBeGreaterThan(0);
 
-    // Check the greet count.
     const rows = await testRuntime.queryUserDB<ecosystem>("SELECT * FROM ecosystem WHERE name=$1", "dbos");
     expect(rows[0].company_name).toBe("DBOS Inc.");
+  });
+
+  test("test-ecosystem-insert-unique", async () => {
+    await testRuntime.queryUserDB("DELETE FROM ecosystem");
+    const eco: ecosystem = { name: "dbos-unique", company_name: "DBOS Inc." };
+    const res = await testRuntime.invoke(EcosystemOperations).insertEcosystem(eco);
+    expect(res.id).toBeGreaterThan(0);
+
+    const eco2: ecosystem = { name: "dbos-unique", company_name: "DBOS Inc." };
+    const res2 = await testRuntime.invoke(EcosystemOperations).insertEcosystem(eco2);
+    expect(res2.id).toBeUndefined();
+    expect(res2.last_status).toMatch("Ecosystem already exists");
   });
 
   test("test-ecosystem-update", async () => {

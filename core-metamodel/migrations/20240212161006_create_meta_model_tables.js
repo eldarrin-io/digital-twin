@@ -6,14 +6,14 @@ exports.up = async function(knex) {
   // data tables
   await knex.schema.createTable('ecosystem', table => {
     table.increments('id').primary();
-    table.text('name');
+    table.text('name').unique();
     table.text('company_name');
   });
 
   await knex.schema.createTable('business_capability', table => {
     table.increments('id').primary();
     table.text('name');
-    table.integer('ecosystem_id').references('ecosystem.id');
+    table.integer('ecosystem_id').references('ecosystem.id').notNullable();
   });
 
   await knex.schema.createTableLike('business_service', 'business_capability');

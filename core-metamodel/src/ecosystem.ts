@@ -1,6 +1,6 @@
 import {
-  TransactionContext, WorkflowContext, Transaction, Workflow, HandlerContext,
-  GetApi, PostApi, DBOSResponseError, ArgRequired, ArgOptional, DBOSContext, Communicator, CommunicatorContext, ArgSource, ArgSources, KoaMiddleware
+  TransactionContext, Transaction, HandlerContext,
+  GetApi, PostApi, ArgRequired, ArgOptional
 } from '@dbos-inc/dbos-sdk';
 
 import { Knex } from 'knex';
@@ -9,22 +9,32 @@ export interface ecosystem {
   id?: number;
   name: string;
   company_name: string;
+  last_status?: string;
 }
 
 export class EcosystemOperations {
 
   @Transaction()
   static async insertEcosystem(ctx: TransactionContext<Knex>, eco: ecosystem) {
-    const rows = await ctx.client<ecosystem>("ecosystem")
-        .insert({ name: eco.name, company_name: eco.company_name })
-        .returning("id");
-    eco.id = rows[0].id;
+    const name = eco.name;
+    const exists = await ctx.client<ecosystem>('ecosystem')
+        .select().where({ name }).first();
+    if (exists) {
+      ctx.logger.warn(`Ecosystem already exists: ${name}`);
+      eco.last_status = "Ecosystem already exists";
+    } else {
+      const rows = await ctx.client<ecosystem>("ecosystem")
+          .insert({name: eco.name, company_name: eco.company_name})
+          .returning("id");
+      eco.id = rows[0].id;
+      eco.last_status = "Ecosystem inserted";
+    }
     return eco;
   }
 
   @Transaction()
   static async updateEcosystem(ctx: TransactionContext<Knex>, eco: ecosystem) {
-    const rows = await ctx.client<ecosystem>("ecosystem")
+    await ctx.client<ecosystem>("ecosystem")
         .update({ name: eco.name, company_name: eco.company_name })
         .where({ id: eco.id });
     return eco;
@@ -35,7 +45,7 @@ export class EcosystemOperations {
     ctx.logger.info(`getting session record ${name}`);
     const session = await ctx.client<ecosystem>('ecosystem')
         .select("*")
-        .where({ name })
+        .where({ name });
     if (!session) { return undefined; }
     return session[0];
   }
