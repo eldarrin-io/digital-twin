@@ -1,8 +1,10 @@
-name: Build
+name: SonarCloud CI Core Metamodel
 on:
   push:
     branches:
       - main
+    paths:
+      - 'core-metamodel/**'
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -35,4 +37,4 @@ jobs:
       - name: Manually run sonar scanner
         run: |
           cd core-metamodel
-          sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          sonar-scanner -Dsonar.host.url=https://sonarcloud.io -Dsonar.token=${{ secrets.SONAR_TOKEN }}
