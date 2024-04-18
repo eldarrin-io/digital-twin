@@ -17,6 +17,8 @@ jobs:
         run: |
           cd frontend-metamodel
           npm install
+      - name: Build
+        run: |
           npm run build
 #      - name: Test
 #        run: |
