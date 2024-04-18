@@ -1,8 +1,6 @@
 name: SonarCloud CI Frontend Metamodel
 on:
   push:
-    paths:
-      - 'frontend-metamodel/**'
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
