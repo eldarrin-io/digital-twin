@@ -24,27 +24,27 @@ export class BusinessServiceOperations {
     if (exists) {
       ctx.logger.warn(`BusinessService already exists: ${name}`);
       busServ.last_status = "BusinessService already exists";
+      return busServ;
+    }
+    if (business_capability_id > 0) {
+      const rows = await ctx.client<BusinessService>("business_service")
+          .insert({
+            name: busServ.name,
+            ecosystem_id: busServ.ecosystem_id,
+            business_capability_id: busServ.business_capability_id
+          })
+          .returning("id");
+      busServ.id = rows[0].id;
+      busServ.last_status = "BusinessService inserted";
     } else {
-      if (business_capability_id > 0) {
-        const rows = await ctx.client<BusinessService>("business_service")
-            .insert({
-              name: busServ.name,
-              ecosystem_id: busServ.ecosystem_id,
-              business_capability_id: busServ.business_capability_id
-            })
-            .returning("id");
-        busServ.id = rows[0].id;
-        busServ.last_status = "BusinessService inserted";
-      } else {
-        const rows = await ctx.client<BusinessService>("business_service")
-            .insert({
-              name: busServ.name,
-              ecosystem_id: busServ.ecosystem_id
-            })
-            .returning("id");
-        busServ.id = rows[0].id;
-        busServ.last_status = "BusinessService inserted";
-      }
+      const rows = await ctx.client<BusinessService>("business_service")
+          .insert({
+            name: busServ.name,
+            ecosystem_id: busServ.ecosystem_id
+          })
+          .returning("id");
+      busServ.id = rows[0].id;
+      busServ.last_status = "BusinessService inserted";
     }
     return busServ;
   }
@@ -79,15 +79,16 @@ export class BusinessServiceOperations {
     if (id) {
       const busServ: BusinessService = { id, name, ecosystem_id, business_capability_id };
       return ctx.invoke(BusinessServiceOperations).updateBusinessService(busServ);
-    } else {
-      if (business_capability_id) {
-        // Insert a new row into the 'BusinessService' table.
-        return ctx.invoke(BusinessServiceOperations).insertBusinessService(name, ecosystem_id, business_capability_id);
-      } else {
-        // Insert a new row into the 'BusinessService' table.
-        return ctx.invoke(BusinessServiceOperations).insertBusinessService(name, ecosystem_id, 0);
-      }
     }
+
+    if (business_capability_id) {
+      // Insert a new row into the 'BusinessService' table.
+      return ctx.invoke(BusinessServiceOperations).insertBusinessService(name, ecosystem_id, business_capability_id);
+    }
+
+    // Insert a new row into the 'BusinessService' table.
+    return ctx.invoke(BusinessServiceOperations).insertBusinessService(name, ecosystem_id, 0);
+
   }
 
   @GetApi('/business_service/:ecosystem_id/:name') // Serve this function from HTTP GET requests to the /business_service/:name endpoint

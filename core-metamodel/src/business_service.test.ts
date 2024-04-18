@@ -10,6 +10,7 @@ describe("busServ-operations-test", () => {
 
   beforeAll(async () => {
     testRuntime_busServ = await createTestingRuntime([BusinessServiceOperations]);
+    await testRuntime_busServ.queryUserDB("DELETE FROM application_service");
     await testRuntime_busServ.queryUserDB("DELETE FROM business_service");
     await testRuntime_busServ.queryUserDB("DELETE FROM business_capability");
     await testRuntime_busServ.queryUserDB("DELETE FROM ecosystem");
