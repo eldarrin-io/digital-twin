@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Route, RouteComponentProps, Switch, useLocation } from 'react-router-dom';
 import { Dashboard } from '@app/Dashboard/Dashboard';
-import { MetaModel } from '@app/MetaModel/MetaModel';
 import { Support } from '@app/Support/Support';
 import { GeneralSettings } from '@app/Settings/General/GeneralSettings';
 import { ProfileSettings } from '@app/Settings/Profile/ProfileSettings';
@@ -35,13 +34,7 @@ const routes: AppRouteConfig[] = [
     path: '/',
     title: 'Digital Twin | Main Dashboard',
   },
-  {
-    component: MetaModel,
-    exact: true,
-    label: 'Meta Model',
-    path: '/metamodel',
-    title: 'Digital Twin | Meta Model',
-  },
+
   {
     component: Support,
     exact: true,

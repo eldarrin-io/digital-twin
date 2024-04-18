@@ -19,9 +19,7 @@ import {
 import { IAppRoute, IAppRouteGroup, routes } from '@app/routes';
 import logo from '@app/bgimages/digitaltwins.svg';
 import { BarsIcon } from '@patternfly/react-icons';
-import {
-  MastheadToolbar
-} from "@app/MastheadToolbar/MastheadToolbar";
+
 
 interface IAppLayout {
   children: React.ReactNode;
@@ -41,7 +39,7 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
           <Brand src={logo} alt="Patterfly Logo" heights={{ default: '36px' }} />
         </MastheadBrand>
       </MastheadMain>
-      <MastheadToolbar />
+
     </Masthead>
   );
 

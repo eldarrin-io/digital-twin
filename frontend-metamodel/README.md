@@ -52,7 +52,7 @@ npm run build:storybook
 ## Configurations
 * [TypeScript Config](./tsconfig.json)
 * [Webpack Config](./webpack.common.js)
-* [Jest Config](./jest.config.js)
+* [Jest Config](./jest.config.ts)
 * [Editor Config](./.editorconfig)
 
 ## Raster image support
