@@ -13,7 +13,9 @@ exports.up = async function(knex) {
   await knex.schema.createTable('business_capability', table => {
     table.increments('id').primary();
     table.text('name');
-    table.integer('ecosystem_id').references('ecosystem.id').notNullable();
+    table.text('description');
+    table.integer('ecosystem_id').references('ecosystem.id');
+    table.unique(['name', 'ecosystem_id']);
   });
 
   await knex.schema.createTableLike('business_service', 'business_capability');
@@ -32,10 +34,9 @@ exports.up = async function(knex) {
   });
 
   await knex.schema.createTableLike('application_implementation', 'business_capability');
-  return  knex.schema.alterTable('application_implementation', function (table) {
+  return   knex.schema.alterTable('application_implementation', function (table) {
     table.integer('application_component_id').references('application_component.id');
   });
-
 
 };
 

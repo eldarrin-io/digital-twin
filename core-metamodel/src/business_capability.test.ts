@@ -9,6 +9,7 @@ describe("buscap-operations-test", () => {
 
   beforeAll(async () => {
     testRuntime_buscap = await createTestingRuntime([BusinessCapabilityOperations]);
+    await testRuntime_buscap.queryUserDB("DELETE FROM business_service");
     await testRuntime_buscap.queryUserDB("DELETE FROM business_capability");
     await testRuntime_buscap.queryUserDB("DELETE FROM ecosystem");
     await testRuntime_buscap.queryUserDB<ecosystem>("insert into ecosystem(name, company_name) values (\'test\', \'test\')");

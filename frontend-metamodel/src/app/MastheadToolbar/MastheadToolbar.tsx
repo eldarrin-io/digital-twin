@@ -25,14 +25,14 @@ import {
   ToolbarItem,
   Tooltip
 } from '@patternfly/react-core';
-import { Link } from '@reach/router';
+import { Link } from '@gatsbyjs/reach-router';
 import EllipsisVIcon from '@patternfly/react-icons/dist/esm/icons/ellipsis-v-icon';
 import BellIcon from '@patternfly/react-icons/dist/esm/icons/bell-icon';
 import CogIcon from '@patternfly/react-icons/dist/esm/icons/cog-icon';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import ThIcon from '@patternfly/react-icons/dist/esm/icons/th-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/question-circle-icon';
-import imgAvatar from '@patternfly/react-core/src/components/assets/avatarImg.svg';
+import imgAvatar from '@app/bgimages/avatar.png';
 import pfIcon from '@patternfly/react-core/src/demos/assets/pf-logo-small.svg';
 
 export const MastheadToolbar: React.FunctionComponent = () => {
@@ -413,7 +413,7 @@ export const MastheadToolbar: React.FunctionComponent = () => {
                 onClick={onDropdownToggle}
                 isFullHeight
                 isExpanded={isDropdownOpen}
-                icon={<Avatar src="images/avatar.png" alt="" />}
+                icon={<Avatar src={imgAvatar} alt="" />}
               >
                 Need Username
               </MenuToggle>
