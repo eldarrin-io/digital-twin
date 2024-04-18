@@ -1,8 +1,6 @@
 name: SonarCloud CI Core Metamodel
 on:
   push:
-    paths:
-      - 'core-metamodel/**'
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
