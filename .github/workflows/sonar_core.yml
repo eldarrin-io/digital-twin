@@ -1,8 +1,6 @@
 name: SonarCloud CI Core Metamodel
 on:
   push:
-    branches:
-      - main
     paths:
       - 'core-metamodel/**'
   pull_request:
