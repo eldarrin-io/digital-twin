@@ -32,7 +32,6 @@ import CogIcon from '@patternfly/react-icons/dist/esm/icons/cog-icon';
 import HelpIcon from '@patternfly/react-icons/dist/esm/icons/help-icon';
 import ThIcon from '@patternfly/react-icons/dist/esm/icons/th-icon';
 import QuestionCircleIcon from '@patternfly/react-icons/dist/esm/icons/question-circle-icon';
-import imgAvatar from '@app/bgimages/avatar.png';
 import pfIcon from '@patternfly/react-core/src/demos/assets/pf-logo-small.svg';
 
 export const MastheadToolbar: React.FunctionComponent = () => {
@@ -413,7 +412,7 @@ export const MastheadToolbar: React.FunctionComponent = () => {
                 onClick={onDropdownToggle}
                 isFullHeight
                 isExpanded={isDropdownOpen}
-                icon={<Avatar src={imgAvatar} alt="" />}
+                icon={<Avatar src="" alt="" />}
               >
                 Need Username
               </MenuToggle>
