@@ -44,11 +44,10 @@ export class BusinessCapabilityOperations {
   @Transaction({ readOnly: true })
   static async getBusinessCapabilityTrans(ctx: TransactionContext<Knex>, name: string, ecosystem_id: number): Promise<BusinessCapability | undefined> {
     ctx.logger.info(`getting session rbusCaprd ${name}`);
-    const session = await ctx.client<BusinessCapability>('business_capability')
+    const busCap = await ctx.client<BusinessCapability>('business_capability')
         .select("*")
         .where({ name, ecosystem_id });
-    if (!session) { return undefined; }
-    return session[0];
+    return busCap[0];
   }
 
   @PostApi('/business_capability') // Serve this function from HTTP POST requests to the /business_capability endpoint

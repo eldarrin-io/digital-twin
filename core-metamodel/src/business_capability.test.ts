@@ -1,5 +1,5 @@
 import { TestingRuntime, createTestingRuntime } from "@dbos-inc/dbos-sdk";
-import {BusinessCapabilityOperations, BusinessCapability, ecosystem} from "./operations";
+import {BusinessCapabilityOperations, BusinessCapability, Ecosystem} from "./operations";
 // @ts-ignore
 import request from "supertest";
 
@@ -12,8 +12,8 @@ describe("buscap-operations-test", () => {
     await testRuntime_buscap.queryUserDB("DELETE FROM business_service");
     await testRuntime_buscap.queryUserDB("DELETE FROM business_capability");
     await testRuntime_buscap.queryUserDB("DELETE FROM ecosystem");
-    await testRuntime_buscap.queryUserDB<ecosystem>("insert into ecosystem(name, company_name) values (\'test\', \'test\')");
-    let res = await testRuntime_buscap.queryUserDB<ecosystem>("SELECT * FROM ecosystem WHERE name=$1", "test");
+    await testRuntime_buscap.queryUserDB<Ecosystem>("insert into ecosystem(name, company_name) values (\'test\', \'test\')");
+    let res = await testRuntime_buscap.queryUserDB<Ecosystem>("SELECT * FROM ecosystem WHERE name=$1", "test");
     eco_id = res[0].id || 0;
   });
 
@@ -118,5 +118,9 @@ describe("buscap-operations-test", () => {
 
     const resBody: BusinessCapability = res.body;
     expect(resBody.name).toMatch("dbos-get");
+
+    const res2 = await request(testRuntime_buscap.getHandlersCallback())
+        .get("/business_capability/"+ eco_id +"/dbos-never");
+    expect(res2.statusCode).toBe(204);
   });
 });

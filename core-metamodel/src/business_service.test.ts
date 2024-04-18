@@ -1,5 +1,5 @@
 import { TestingRuntime, createTestingRuntime } from "@dbos-inc/dbos-sdk";
-import {BusinessServiceOperations, BusinessService, ecosystem, BusinessCapability} from "./operations";
+import {BusinessServiceOperations, BusinessService, Ecosystem, BusinessCapability} from "./operations";
 // @ts-ignore
 import request from "supertest";
 
@@ -13,8 +13,8 @@ describe("busServ-operations-test", () => {
     await testRuntime_busServ.queryUserDB("DELETE FROM business_service");
     await testRuntime_busServ.queryUserDB("DELETE FROM business_capability");
     await testRuntime_busServ.queryUserDB("DELETE FROM ecosystem");
-    await testRuntime_busServ.queryUserDB<ecosystem>("insert into ecosystem(name, company_name) values (\'test\', \'test\')");
-    let resEco = await testRuntime_busServ.queryUserDB<ecosystem>("SELECT * FROM ecosystem WHERE name=$1", "test");
+    await testRuntime_busServ.queryUserDB<Ecosystem>("insert into ecosystem(name, company_name) values (\'test\', \'test\')");
+    let resEco = await testRuntime_busServ.queryUserDB<Ecosystem>("SELECT * FROM ecosystem WHERE name=$1", "test");
     eco_id = resEco[0].id || 0;
     await testRuntime_busServ.queryUserDB<BusinessCapability>("insert into business_capability(name, ecosystem_id) values (\'test\', $1)", eco_id);
     let resBusCap = await testRuntime_busServ.queryUserDB<BusinessCapability>("select * from business_capability where ecosystem_id = $1", eco_id);
@@ -47,7 +47,7 @@ describe("busServ-operations-test", () => {
     expect(res2.last_status).toMatch("BusinessService already exists");
 
     const busServ3: BusinessService = { name: "dbos-unique", ecosystem_id: eco_id };
-    const res3 = await testRuntime_busServ.invoke(BusinessServiceOperations).insertBusinessServiceNoCap("dbos-unique", eco_id);
+    const res3 = await testRuntime_busServ.invoke(BusinessServiceOperations).insertBusinessService("dbos-unique", eco_id, 0);
     expect(res3.id).toBeUndefined();
     expect(res3.last_status).toMatch("BusinessService already exists");
   });
@@ -140,5 +140,10 @@ describe("busServ-operations-test", () => {
 
     const resBody: BusinessService = res.body;
     expect(resBody.name).toMatch("dbos-get");
+
+    const res2 = await request(testRuntime_busServ.getHandlersCallback())
+        .get("/business_service/"+ eco_id +"/dbos-never");
+    expect(res2.statusCode).toBe(204);
+
   });
 });

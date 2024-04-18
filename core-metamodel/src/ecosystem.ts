@@ -5,7 +5,7 @@ import {
 
 import { Knex } from 'knex';
 
-export interface ecosystem {
+export interface Ecosystem {
   id?: number;
   name: string;
   company_name: string;
@@ -15,15 +15,15 @@ export interface ecosystem {
 export class EcosystemOperations {
 
   @Transaction()
-  static async insertEcosystem(ctx: TransactionContext<Knex>, eco: ecosystem) {
+  static async insertEcosystem(ctx: TransactionContext<Knex>, eco: Ecosystem) {
     const name = eco.name;
-    const exists = await ctx.client<ecosystem>('ecosystem')
+    const exists = await ctx.client<Ecosystem>('ecosystem')
         .select().where({ name }).first();
     if (exists) {
       ctx.logger.warn(`Ecosystem already exists: ${name}`);
       eco.last_status = "Ecosystem already exists";
     } else {
-      const rows = await ctx.client<ecosystem>("ecosystem")
+      const rows = await ctx.client<Ecosystem>("ecosystem")
           .insert({name: eco.name, company_name: eco.company_name})
           .returning("id");
       eco.id = rows[0].id;
@@ -33,21 +33,20 @@ export class EcosystemOperations {
   }
 
   @Transaction()
-  static async updateEcosystem(ctx: TransactionContext<Knex>, eco: ecosystem) {
-    await ctx.client<ecosystem>("ecosystem")
+  static async updateEcosystem(ctx: TransactionContext<Knex>, eco: Ecosystem) {
+    await ctx.client<Ecosystem>("ecosystem")
         .update({ name: eco.name, company_name: eco.company_name })
         .where({ id: eco.id });
     return eco;
   }
 
   @Transaction({ readOnly: true })
-  static async getEcosystemTrans(ctx: TransactionContext<Knex>, name: string): Promise<ecosystem | undefined> {
+  static async getEcosystemTrans(ctx: TransactionContext<Knex>, name: string): Promise<Ecosystem | undefined> {
     ctx.logger.info(`getting session record ${name}`);
-    const session = await ctx.client<ecosystem>('ecosystem')
+    const ecosystem = await ctx.client<Ecosystem>('ecosystem')
         .select("*")
         .where({ name });
-    if (!session) { return undefined; }
-    return session[0];
+    return ecosystem[0];
   }
 
   @PostApi('/ecosystem') // Serve this function from HTTP POST requests to the /ecosystem endpoint
@@ -59,11 +58,11 @@ export class EcosystemOperations {
 
     // if id exists, update
     if (id) {
-      const eco: ecosystem = { id, name, company_name };
+      const eco: Ecosystem = { id, name, company_name };
       return ctx.invoke(EcosystemOperations).updateEcosystem(eco);
     } else {
       // Insert a new row into the 'ecosystem' table.
-      const eco: ecosystem = { name, company_name };
+      const eco: Ecosystem = { name, company_name };
       return ctx.invoke(EcosystemOperations).insertEcosystem(eco);
     }
   }

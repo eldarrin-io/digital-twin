@@ -25,33 +25,30 @@ export class BusinessServiceOperations {
       ctx.logger.warn(`BusinessService already exists: ${name}`);
       busServ.last_status = "BusinessService already exists";
     } else {
-      const rows = await ctx.client<BusinessService>("business_service")
-          .insert({name: busServ.name, ecosystem_id: busServ.ecosystem_id, business_capability_id: busServ.business_capability_id})
-          .returning("id");
-      busServ.id = rows[0].id;
-      busServ.last_status = "BusinessService inserted";
+      if (business_capability_id > 0) {
+        const rows = await ctx.client<BusinessService>("business_service")
+            .insert({
+              name: busServ.name,
+              ecosystem_id: busServ.ecosystem_id,
+              business_capability_id: busServ.business_capability_id
+            })
+            .returning("id");
+        busServ.id = rows[0].id;
+        busServ.last_status = "BusinessService inserted";
+      } else {
+        const rows = await ctx.client<BusinessService>("business_service")
+            .insert({
+              name: busServ.name,
+              ecosystem_id: busServ.ecosystem_id
+            })
+            .returning("id");
+        busServ.id = rows[0].id;
+        busServ.last_status = "BusinessService inserted";
+      }
     }
     return busServ;
   }
 
-  @Transaction()
-  static async insertBusinessServiceNoCap(ctx: TransactionContext<Knex>,
-                                     name: string, ecosystem_id: number) {
-    const busServ: BusinessService = { name, ecosystem_id};
-    const exists = await ctx.client<BusinessService>('business_service')
-        .select().where({ name }).andWhere({ ecosystem_id }).first();
-    if (exists) {
-      ctx.logger.warn(`BusinessService already exists: ${name}`);
-      busServ.last_status = "BusinessService already exists";
-    } else {
-      const rows = await ctx.client<BusinessService>("business_service")
-          .insert({name: busServ.name, ecosystem_id: busServ.ecosystem_id})
-          .returning("id");
-      busServ.id = rows[0].id;
-      busServ.last_status = "BusinessService inserted";
-    }
-    return busServ;
-  }
 
   @Transaction()
   static async updateBusinessService(ctx: TransactionContext<Knex>, busServ: BusinessService) {
@@ -64,11 +61,10 @@ export class BusinessServiceOperations {
   @Transaction({ readOnly: true })
   static async getBusinessServiceTrans(ctx: TransactionContext<Knex>, name: string, ecosystem_id: number): Promise<BusinessService | undefined> {
     ctx.logger.info(`getting session rbusServrd ${name}`);
-    const session = await ctx.client<BusinessService>('business_service')
+    const service = await ctx.client<BusinessService>('business_service')
         .select("*")
         .where({ name, ecosystem_id });
-    if (!session) { return undefined; }
-    return session[0];
+    return service[0];
   }
 
   @PostApi('/business_service') // Serve this function from HTTP POST requests to the /business_service endpoint
@@ -89,7 +85,7 @@ export class BusinessServiceOperations {
         return ctx.invoke(BusinessServiceOperations).insertBusinessService(name, ecosystem_id, business_capability_id);
       } else {
         // Insert a new row into the 'BusinessService' table.
-        return ctx.invoke(BusinessServiceOperations).insertBusinessServiceNoCap(name, ecosystem_id);
+        return ctx.invoke(BusinessServiceOperations).insertBusinessService(name, ecosystem_id, 0);
       }
     }
   }
