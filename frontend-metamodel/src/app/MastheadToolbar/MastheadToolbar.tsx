@@ -149,7 +149,7 @@ export const MastheadToolbar: React.FunctionComponent = () => {
           itemId="2"
           id="2"
           isFavorited={favorites.includes('2')}
-          component={(props) => <Link {...props} to="#router-link" />}
+          component={linkComponent}
         >
           @reach/router Link
         </MenuItem>
@@ -158,8 +158,8 @@ export const MastheadToolbar: React.FunctionComponent = () => {
           id="3"
           isFavorited={favorites.includes('3')}
           isExternalLink
-          icon={<img src={pfIcon} />}
-          component={(props) => <Link {...props} to="#router-link2" />}
+          icon={<img src={pfIcon} alt=""/>}
+          component={linkComponent}
         >
           @reach/router Link with icon
         </MenuItem>
@@ -178,6 +178,10 @@ export const MastheadToolbar: React.FunctionComponent = () => {
     </MenuList>
   ];
 
+  function linkComponent(props) {
+    return <Link {...props} to="#router-link"/>;
+  }
+
   const createFavorites = (favIds: string[]) => {
     const favorites: unknown[] = [];
 
@@ -194,10 +198,8 @@ export const MastheadToolbar: React.FunctionComponent = () => {
             favorites.push(child);
           }
         });
-      } else {
-        if (favIds.includes(item.props.itemId)) {
+      } else if (favIds.includes(item.props.itemId)) {
           favorites.push(item);
-        }
       }
     });
 
@@ -242,11 +244,10 @@ export const MastheadToolbar: React.FunctionComponent = () => {
           } else {
             keepDivider = false;
           }
-        } else {
-          if ((keepDivider && group.type === Divider) || filteredIds.includes(group.props.itemId)) {
-            return group;
-          }
+        } else if ((keepDivider && group.type === Divider) || filteredIds.includes(group.props.itemId)) {
+          return group;
         }
+
       })
       .filter((newGroup) => newGroup);
 
@@ -359,17 +360,7 @@ export const MastheadToolbar: React.FunctionComponent = () => {
               onSelect={onKebabDropdownSelect}
               onOpenChange={(isOpen: boolean) => setIsKebabDropdownOpen(isOpen)}
               popperProps={{ position: 'right' }}
-              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                <MenuToggle
-                  ref={toggleRef}
-                  onClick={onKebabDropdownToggle}
-                  isExpanded={isKebabDropdownOpen}
-                  variant="plain"
-                  aria-label="Settings and help"
-                >
-                  <EllipsisVIcon aria-hidden="true" />
-                </MenuToggle>
-              )}
+              toggle={menuToggle}
             >
               <DropdownList>{kebabDropdownItems}</DropdownList>
             </Dropdown>
@@ -380,17 +371,7 @@ export const MastheadToolbar: React.FunctionComponent = () => {
               onSelect={onFullKebabDropdownSelect}
               onOpenChange={(isOpen: boolean) => setIsFullKebabDropdownOpen(isOpen)}
               popperProps={{ position: 'right' }}
-              toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-                <MenuToggle
-                  ref={toggleRef}
-                  onClick={onFullKebabDropdownToggle}
-                  isExpanded={isFullKebabDropdownOpen}
-                  variant="plain"
-                  aria-label="Toolbar menu"
-                >
-                  <EllipsisVIcon aria-hidden="true" />
-                </MenuToggle>
-              )}
+              toggle={menuToggle2}
             >
               <DropdownGroup key="group 2" aria-label="User actions">
                 <DropdownList>{userDropdownItems}</DropdownList>
@@ -406,17 +387,7 @@ export const MastheadToolbar: React.FunctionComponent = () => {
             onSelect={onDropdownSelect}
             onOpenChange={(isOpen: boolean) => setIsDropdownOpen(isOpen)}
             popperProps={{ position: 'right' }}
-            toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
-              <MenuToggle
-                ref={toggleRef}
-                onClick={onDropdownToggle}
-                isFullHeight
-                isExpanded={isDropdownOpen}
-                icon={<Avatar src="" alt="" />}
-              >
-                Need Username
-              </MenuToggle>
-            )}
+            toggle={menuToggle3}
           >
             <DropdownList>{userDropdownItems}</DropdownList>
           </Dropdown>
@@ -424,6 +395,42 @@ export const MastheadToolbar: React.FunctionComponent = () => {
       </ToolbarContent>
     </Toolbar>
   );
+
+  function menuToggle3(toggleRef: React.Ref<MenuToggleElement>) {
+    return <MenuToggle
+      ref={toggleRef}
+      onClick={onDropdownToggle}
+      isFullHeight
+      isExpanded={isDropdownOpen}
+      icon={<Avatar src="" alt=""/>}
+    >
+      Need Username
+    </MenuToggle>;
+  }
+
+  function menuToggle2(toggleRef: React.Ref<MenuToggleElement>) {
+    return <MenuToggle
+      ref={toggleRef}
+      onClick={onFullKebabDropdownToggle}
+      isExpanded={isFullKebabDropdownOpen}
+      variant="plain"
+      aria-label="Toolbar menu"
+    >
+      <EllipsisVIcon aria-hidden="true"/>
+    </MenuToggle>;
+  }
+
+  function menuToggle(toggleRef: React.Ref<MenuToggleElement>) {
+    return <MenuToggle
+      ref={toggleRef}
+      onClick={onKebabDropdownToggle}
+      isExpanded={isKebabDropdownOpen}
+      variant="plain"
+      aria-label="Settings and help"
+    >
+      <EllipsisVIcon aria-hidden="true"/>
+    </MenuToggle>;
+  }
 
   return (
       <MastheadContent>{headerToolbar}</MastheadContent>
