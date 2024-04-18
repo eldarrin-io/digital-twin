@@ -1,17 +1,19 @@
-// For a detailed explanation regarding each configuration property, visit:
-// https://jestjs.io/docs/en/configuration.html
-
-module.exports = {
+import type {Config} from '@jest/types';
+// Sync object
+const config: Config.InitialOptions = {
+  verbose: false,
+  transform: {
+  '^.+\\.tsx?$': 'ts-jest',
+  },
   // Automatically clear mock calls and instances between every test
   clearMocks: true,
 
   // Indicates whether the coverage information should be collected while executing the test
-  collectCoverage: false,
+  collectCoverage: true,
 
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
 
-  // An array of directory names to be searched recursively up from the requiring module's location
   moduleDirectories: [
     "node_modules",
     "<rootDir>/src"
@@ -30,3 +32,5 @@ module.exports = {
   // The test environment that will be used for testing.
   testEnvironment: "jsdom",
 };
+export default config;
+
