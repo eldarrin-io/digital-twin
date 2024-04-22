@@ -1,12 +1,18 @@
 import * as React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
+  Avatar,
   Brand,
   Button,
-  Masthead,
-  MastheadBrand,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  Masthead, MastheadBrand,
+  MastheadContent,
   MastheadMain,
   MastheadToggle,
+  MenuToggle,
+  MenuToggleElement,
   Nav,
   NavExpandable,
   NavItem,
@@ -14,10 +20,11 @@ import {
   Page,
   PageSidebar,
   PageSidebarBody,
-  SkipToContent
+  SkipToContent, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem
 } from '@patternfly/react-core';
 import { IAppRoute, IAppRouteGroup, routes } from '@app/routes';
 import logo from '@app/bgimages/digitaltwins.svg';
+
 import { BarsIcon } from '@patternfly/react-icons';
 
 
@@ -27,6 +34,30 @@ interface IAppLayout {
 
 const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+  const onDropdownSelect = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  const onDropdownToggle = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+  function userDropDownToggle(toggleRef: React.Ref<MenuToggleElement>) {
+    return <MenuToggle
+      ref={toggleRef}
+      onClick={onDropdownToggle}
+      isFullHeight
+      isExpanded={isDropdownOpen}
+    >
+      Administrator
+    </MenuToggle>;
+  }
+  const userDropdownItems = [
+    <>
+      <DropdownItem key="group 2 profile">My profile</DropdownItem>
+      <DropdownItem key="group 2 user">User management</DropdownItem>
+      <DropdownItem key="group 2 logout">Logout</DropdownItem>
+    </>
+  ];
   const Header = (
     <Masthead>
       <MastheadToggle>
@@ -39,6 +70,34 @@ const AppLayout: React.FunctionComponent<IAppLayout> = ({ children }) => {
           <Brand src={logo} alt="Patterfly Logo" heights={{ default: '36px' }} />
         </MastheadBrand>
       </MastheadMain>
+      <MastheadContent>
+        <Toolbar id="toolbar" isFullHeight isStatic>
+          <ToolbarContent>
+            <ToolbarGroup
+              variant="icon-button-group"
+              align={{ default: 'alignRight' }}
+              spacer={{ default: 'spacerNone', md: 'spacerMd' }}
+            >
+              <ToolbarItem>
+                <Button variant="plain" aria-label="Test Settings">
+                  Test
+                </Button>
+              </ToolbarItem>
+            </ToolbarGroup>
+            <ToolbarItem visibility={{ default: 'hidden', md: 'visible' }}>
+              <Dropdown
+                isOpen={isDropdownOpen}
+                onSelect={onDropdownSelect}
+                onOpenChange={(isOpen: boolean) => setIsDropdownOpen(isOpen)}
+                popperProps={{ position: 'right' }}
+                toggle={userDropDownToggle}
+              >
+                <DropdownList>{userDropdownItems}</DropdownList>
+              </Dropdown>
+            </ToolbarItem>
+          </ToolbarContent>
+        </Toolbar>
+      </MastheadContent>
 
     </Masthead>
   );

@@ -17,7 +17,7 @@ describe('App tests', () => {
     expect(screen.getByRole('button', { name: "Global navigation"})).toBeVisible();
   });
 
-  // I'm fairly sure that this test not going to work properly no matter what we do since JSDOM doesn't actually 
+  // I'm fairly sure that this test not going to work properly no matter what we do since JSDOM doesn't actually
   // draw anything. We could potentially make something work, likely using a different test environment, but
   // using Cypress for this kind of test would be more efficient.
   it.skip('should hide the sidebar on smaller viewports', () => {
@@ -52,4 +52,36 @@ describe('App tests', () => {
 
     expect(screen.queryByRole('link', { name: "Dashboard"})).not.toBeInTheDocument();
   });
+
+  it('should show the sidebar when clicking the nav-toggle button twice', async () => {
+    const user = userEvent.setup()
+
+    render(<App />);
+
+    window.dispatchEvent(new Event('resize'));
+    const button = screen.getByRole('button', { name: "Global navigation"})
+
+    expect(screen.getByRole('link', { name: "Dashboard"})).toBeVisible();
+
+    await user.click(button);
+    await user.click(button);
+
+    expect(screen.getByRole('link', { name: "Dashboard"})).toBeVisible();
+  });
+
+  it('does the user dropdown work?', async () => {
+    const user = userEvent.setup()
+
+    render(<App />);
+
+    const button = screen.getByRole('button', { name: "Administrator"})
+
+    expect(screen.queryByText('My profile')).not.toBeInTheDocument();
+
+    await user.click(button);
+
+    expect(screen.getByText('My profile')).toBeInTheDocument();
+  });
+
+
 });
