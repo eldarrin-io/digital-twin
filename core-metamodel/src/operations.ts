@@ -3,3 +3,5 @@ export { EcosystemOperations, Ecosystem } from './ecosystem';
 export { BusinessCapabilityOperations, BusinessCapability } from './business_capability';
 export { BusinessServiceOperations, BusinessService } from './business_service';
 export { ApplicationServiceOperations, ApplicationService } from './application_service';
+export { ApplicationComponentOperations, ApplicationComponent } from './application_component';
+export { ApplicationImplementationOperations, ApplicationImplementation } from './application_implementation';

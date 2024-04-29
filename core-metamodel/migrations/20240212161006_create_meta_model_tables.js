@@ -34,8 +34,17 @@ exports.up = async function(knex) {
   });
 
   await knex.schema.createTableLike('application_implementation', 'business_capability');
-  return   knex.schema.alterTable('application_implementation', function (table) {
+  await knex.schema.alterTable('application_implementation', function (table) {
     table.integer('application_component_id').references('application_component.id');
+  });
+
+  return knex.schema.createTable('problem', table => {
+    table.increments('id').primary();
+    table.text('name');
+    table.text('description');
+    table.integer('ecosystem_id').references('ecosystem.id');
+    table.integer('application_implementation').references('application_implementation.id');
+    table.unique(['name', 'ecosystem_id']);
   });
 
 };

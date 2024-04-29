@@ -10,6 +10,8 @@ describe("appServ-operations-test", () => {
 
   beforeAll(async () => {
     testRuntime_appServ = await createTestingRuntime([ApplicationServiceOperations]);
+    await testRuntime_appServ.queryUserDB("DELETE FROM application_implementation");
+    await testRuntime_appServ.queryUserDB("DELETE FROM application_component");
     await testRuntime_appServ.queryUserDB("DELETE FROM application_service");
     await testRuntime_appServ.queryUserDB("DELETE FROM business_service");
     await testRuntime_appServ.queryUserDB("DELETE FROM business_capability");
