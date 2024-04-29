@@ -9,6 +9,8 @@ describe("buscap-operations-test", () => {
 
   beforeAll(async () => {
     testRuntime_buscap = await createTestingRuntime([BusinessCapabilityOperations]);
+    await testRuntime_buscap.queryUserDB("DELETE FROM application_implementation");
+    await testRuntime_buscap.queryUserDB("DELETE FROM application_component");
     await testRuntime_buscap.queryUserDB("DELETE FROM application_service");
     await testRuntime_buscap.queryUserDB("DELETE FROM business_service");
     await testRuntime_buscap.queryUserDB("DELETE FROM business_capability");

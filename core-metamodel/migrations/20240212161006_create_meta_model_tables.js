@@ -50,6 +50,7 @@ exports.up = async function(knex) {
 };
 
 exports.down = async function(knex) {
+  await knex.schema.dropTable('problem');
   await knex.schema.dropTable('application_implementation');
   await knex.schema.dropTable('application_component');
   await knex.schema.dropTable('application_service');
