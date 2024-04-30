@@ -5,3 +5,4 @@ export { BusinessServiceOperations, BusinessService } from './business_service';
 export { ApplicationServiceOperations, ApplicationService } from './application_service';
 export { ApplicationComponentOperations, ApplicationComponent } from './application_component';
 export { ApplicationImplementationOperations, ApplicationImplementation } from './application_implementation';
+export { InfoInterpreter } from './info_interpreter/info_interpreter';
