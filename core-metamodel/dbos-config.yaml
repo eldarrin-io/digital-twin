@@ -14,6 +14,10 @@ application:
   # Local defaults
   payment_host: 'http://localhost:8086'
   local_host: 'http://localhost:8082'
+  email_address: ${EMAIL_ADDRESS}
+  email_password: ${EMAIL_PASSWORD}
+  email_host: ${EMAIL_HOST}
+  email_port: 993
   # cloud example
   # payment_host: 'https://<username>-payment-backend.cloud.dbos.dev'
   # local_host: 'https://<username>-shop-backend.cloud.dbos.dev'

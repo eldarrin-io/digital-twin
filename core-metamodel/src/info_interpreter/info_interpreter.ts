@@ -33,108 +33,126 @@ interface ImapConfig {
   tls: boolean;
 }
 
-const imapConfig: ImapConfig = {
-  user: 'digital.twin@eldarrin.io',
-  password: 'password',
-  host: 'emailserver',
-  port: 993,
-  tls: true,
-};
+
 
 export class InfoInterpreter {
+
+  static stringUtoString(string: string | undefined): string {
+    if (string === undefined) {
+      return "";
+    } else {
+      return string;
+    }
+  }
+
+  // string to number
+  static stringToNumber(string: string | undefined): number {
+    if (string === undefined) {
+      return 0;
+    } else {
+      return parseInt(string);
+    }
+  }
 
   @Communicator()
   static async getEmails(ctx: CommunicatorContext) {
     const myPromise: Promise<string> = new Promise((resolve, reject) => {
-      // This Promise resolves to a string
-    });
+      const imap = new Imap({
+        user: InfoInterpreter.stringUtoString(ctx.getConfig('email_address')),
+        password: InfoInterpreter.stringUtoString(ctx.getConfig('email_password')),
+        host: InfoInterpreter.stringUtoString(ctx.getConfig('email_host')),
+        port: InfoInterpreter.stringToNumber(ctx.getConfig('email_port')),
+        tls: true,
+      });
 
-    try {
-      const value = await myPromise;
-      console.log('Promise resolved with value: ' + value);
-    } catch (error) {
-      console.error('Promise rejected with error: ' + error);
-    }
+      imap.once('ready', () => {
+        imap.openBox('INBOX', false, () => {
+          imap.search(['UNSEEN'], (err, results) => {
+            if (err) {
+              ctx.logger.error(err);
+              reject("error");
+              return;
+            }
 
-    const a = await Promise<string>;
+            if (results.length === 0) {
+              ctx.logger.info("No unseen emails.");
+              resolve("No unseen emails.");
+            } else {
 
-    const imap = new Imap(imapConfig);
+              const f = imap.fetch(results, { bodies: '' });
 
-    imap.once('ready', () => {
-      imap.openBox('INBOX', false, () => {
-        imap.search(['UNSEEN'], (err, results) => {
-          if (err) {
-            ctx.logger.error(err);
-            return;
-          }
+              f.on('message', msg => {
+                msg.on('body', stream => {
 
-          if (results.length === 0) {
-            ctx.logger.info("No unseen emails.");
-            return;
-          }
+                  let data = '';
 
-          const f = imap.fetch(results, { bodies: '' });
-
-          f.on('message', msg => {
-            msg.on('body', stream => {
-
-              let data = '';
-
-              stream.on('data', chunk => {
-                data += chunk;
-              });
-
-              stream.once('end', () => {
-
-                simpleParser(data)
-                  .then(parsed => {
-                    a = parsed.text;
-                    return parsed.text;
-                  })
-                  .catch(err => {
-                    ctx.logger.error(err);
-                    return "a";
+                  stream.on('data', chunk => {
+                    data += chunk;
                   });
+
+                  stream.once('end', () => {
+
+                    simpleParser(data)
+                      .then(parsed => {
+                        ctx.logger.info(parsed.text);
+                        ctx.logger.info(parsed.subject);
+                        //if (parsed.text === undefined) {
+                        // @ts-ignore
+                        resolve(parsed.text);
+                        //} else {
+                        //  resolve("a");
+                        //}
+                        //return parsed.text;
+                      })
+                      .catch(err => {
+                        ctx.logger.error(err);
+                        reject("error3");
+                        //return "a";
+                      });
+                  });
+                });
+
+                msg.once('attributes', attrs => {
+                  const { uid } = attrs;
+                  imap.addFlags(uid, ['\\Seen'], () => {
+                    // Mark the email as read after processing
+                    ctx.logger.info("marked read");
+                    //return "b";
+                  });
+                });
               });
-            });
 
-            msg.once('attributes', attrs => {
-              const { uid } = attrs;
-              imap.addFlags(uid, ['\\Seen'], () => {
-                // Mark the email as read after processing
-                ctx.logger.info("marked read");
-                return "b";
+              f.once('error', ex => {
+                ctx.logger.error(ex);
+                reject(ex);
+                //return Promise.reject(ex);
               });
-            });
-          });
 
-          f.once('error', ex => {
-            ctx.logger.error(ex);
-            return Promise.reject(ex);
-          });
-
-          f.once('end', () => {
-            ctx.logger.info("finished");
-            imap.end();
-            return "d";
+              f.once('end', () => {
+                ctx.logger.info("finished");
+                imap.end();
+                //return "d";
+              });
+            }
           });
         });
       });
+
+      imap.once('error', (err: Error) => {
+        ctx.logger.error(err);
+        reject(err);
+        //return "e";
+      });
+
+      imap.once('end', () => {
+        ctx.logger.info("conn end");
+        //return "f";
+      });
+
+      imap.connect();
     });
 
-    imap.once('error', (err: Error) => {
-      ctx.logger.error(err);
-      return "e";
-    });
-
-    imap.once('end', () => {
-      ctx.logger.info("conn end");
-      return "f";
-    });
-
-    imap.connect();
-
-    //return "g";
+    return myPromise;
 
   }
 
