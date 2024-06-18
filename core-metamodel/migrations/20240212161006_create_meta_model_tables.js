@@ -38,19 +38,18 @@ exports.up = async function(knex) {
     table.integer('application_component_id').references('application_component.id');
   });
 
-  return knex.schema.createTable('problem', table => {
+  return knex.schema.createTable('problem_statement', table => {
     table.increments('id').primary();
     table.text('name');
     table.text('description');
     table.integer('ecosystem_id').references('ecosystem.id');
-    table.integer('application_implementation').references('application_implementation.id');
-    table.unique(['name', 'ecosystem_id']);
+    table.integer('application_implementation_id').references('application_implementation.id');
   });
 
 };
 
 exports.down = async function(knex) {
-  await knex.schema.dropTable('problem');
+  await knex.schema.dropTable('problem_statement');
   await knex.schema.dropTable('application_implementation');
   await knex.schema.dropTable('application_component');
   await knex.schema.dropTable('application_service');

@@ -1,0 +1,28 @@
+name: Fetch Code from Azure DevOps Repo
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Fetch code from Azure DevOps Repo
+        run: |
+            git clone https://user:$(AZURE_DEVOPS_PAT)@dev.azure.com/your-org/your-project/_git/your-repo
+            cp -r your-repo/* .
+            rm -rf your-repo
+            git add .
+            git commit -m "Fetch code from Azure DevOps Repo"
+            git push origin master
+        with:
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

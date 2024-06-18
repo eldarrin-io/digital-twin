@@ -43,6 +43,14 @@ export interface MetaIDBlock {
   problem_statement_id: number;
 }
 
+export interface ProblemStatement {
+  id?: number;
+  name: string;
+  ecosystem_id: number;
+  application_implementation_id: number;
+  last_status?: string;
+}
+
 export class InfoInterpreter {
 
   static stringUtoString(string: string | undefined): string {
@@ -352,15 +360,16 @@ export class InfoInterpreter {
 
   // populate problem statement if missing
   @Transaction()
-  static async populateProblemStatement(ctx: TransactionContext<Knex>, problemStatement: ApplicationImplementation) {
-    const exists = await ctx.client<ApplicationImplementation>('problem_statement')
+  static async populateProblemStatement(ctx: TransactionContext<Knex>, problemStatement: ProblemStatement) {
+    const exists = await ctx.client<ProblemStatement>('problem_statement')
       .select().where('name', '=', problemStatement.name).first();
     if (exists) {
+      problemStatement.id = exists.id;
       problemStatement.last_status = "ProblemStatement already exists";
       return problemStatement;
     }
-    const rows = await ctx.client<ApplicationImplementation>("problem_statement")
-      .insert({ name: problemStatement.name, ecosystem_id: problemStatement.ecosystem_id })
+    const rows = await ctx.client<ProblemStatement>("problem_statement")
+      .insert({ name: problemStatement.name, application_implementation_id: problemStatement.application_implementation_id, ecosystem_id: problemStatement.ecosystem_id })
       .returning("id");
     problemStatement.id = rows[0].id;
     problemStatement.last_status = "ProblemStatement inserted";
@@ -419,6 +428,9 @@ export class InfoInterpreter {
     const applicationImplementation = { name: metaBlock.application_implementation, ecosystem_id: eco.id || 0, application_component_id: appComp.id || 0};
     const appImpl = await ctx.invoke(InfoInterpreter).populateApplicationImplementation(applicationImplementation);
 
+    const problemStatement = { name: metaBlock.problem_statement, application_implementation_id: appImpl.id || 0, ecosystem_id: eco.id || 0};
+    const probStat = await ctx.invoke(InfoInterpreter).populateProblemStatement(problemStatement);
+
     const metaIDBlock : MetaIDBlock = {
       ecosystem_id: eco.id || 0,
       business_service_id: busServ.id || 0,
@@ -426,7 +438,7 @@ export class InfoInterpreter {
       application_service_id: appServ.id || 0,
       application_component_id: appComp.id || 0,
       application_implementation_id: appImpl.id || 0,
-      problem_statement_id: 0
+      problem_statement_id: probStat.id || 0
     };
 
     ctx.logger.info(`Ecosystem: ` + eco.id + " " + busServ.id + " " + busCap.id + " " + appServ.id + " " + appComp.id + " " + appImpl.id);
